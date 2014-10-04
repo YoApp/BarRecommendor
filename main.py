@@ -97,19 +97,27 @@ app = Flask(__name__)
 
 @app.route("/yo/")
 def yo():
+
+    # extract and parse query parameters
     username = request.args.get('username')
     location = request.args.get('location')
     splitted = location.split(';')
     latitude = splitted[0]
     longitude = splitted[1]
 
+    # get the city name since Yelp api must be provided with at least a city even though we give it accurate coordinates
     response = requests.get('http://nominatim.openstreetmap.org/reverse?format=json&lat=' + latitude + '&lon=' +longitude + '&zoom=18&addressdetails=1')
     response_object = json.loads(response.text)
     city = response_object['address']['city']
 
+    # search using Yelp api
     response = search('bars', city, latitude, longitude)
     bar_url = response['businesses'][0]['mobile_url']
+
+    # Yo the result back to the user
     requests.post("http://api.justyo.co/yo/", data={'api_token': '<your_token>', 'username': username, 'link': bar_url})
+
+    # OK!
     return 'OK'
 
 if __name__ == "__main__":
