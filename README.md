@@ -34,7 +34,7 @@
 
         ./ngrok 5000
         
-        ![alt tag](http://cl.ly/image/00143n1b2U05/Screen%20Shot%202014-10-05%20at%208.10.17%20AM.png)
+![alt tag](http://cl.ly/image/00143n1b2U05/Screen%20Shot%202014-10-05%20at%208.10.17%20AM.png)
         
 
 * Copy the URL ngrok creates (i.e ```http://1fe8e9f.ngrok.com```)
@@ -43,4 +43,4 @@
 
 ![alt tag](http://cl.ly/image/2D3E2r3S110F/Screen%20Shot%202014-10-05%20at%208.25.33%20AM.png)
 
-* Yo the name you created (YOBARME in this example) and get a bar recommendation!
+* Yo your location (double tap) to the name you created (YOBARME in this example) and get a bar recommendation!
