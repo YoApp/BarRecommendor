@@ -10,12 +10,8 @@ Yelp Docs: http://www.yelp.com/developers/documentation
 Yelp Keys: http://www.yelp.com/developers/manage_api_keys
 
 """
-import argparse
 import json
-import pprint
 import sys
-import urllib
-import urllib2
 import requests
 import oauth2
 from flask import request
@@ -47,20 +43,7 @@ if len(CONSUMER_KEY) == 0 or \
 
 
 def do_request(host, path, url_params=None):
-    """Prepares OAuth authentication and sends the request to the API.
-
-    Args:
-        host (str): The domain host of the API.
-        path (str): The path of the API after the domain.
-        url_params (dict): An optional set of query parameters in the request.
-
-    Returns:
-        dict: The JSON response from the request.
-
-    Raises:
-        urllib2.HTTPError: An error occurs from the HTTP request.
-    """
-
+    
     url = 'http://{0}{1}'.format(host, path)
     consumer = oauth2.Consumer(CONSUMER_KEY, CONSUMER_SECRET)
     oauth_request = oauth2.Request('GET', url, url_params)
@@ -78,15 +61,9 @@ def do_request(host, path, url_params=None):
 
     print 'Querying Yelp {0}'.format(signed_url)
 
-    conn = urllib2.urlopen(signed_url, None)
-    try:
-        response = json.loads(conn.read())
-    except Exception as e:
-        print e.message
-    finally:
-        conn.close()
-
-    return response
+    response = requests.get(signed_url)
+    response_object = json.loads(response.text)
+    return response_object
 
 def search(term, city, latitude, longitude):
     
