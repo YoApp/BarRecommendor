@@ -60,6 +60,7 @@ def do_request(host, path, url_params=None):
         urllib2.HTTPError: An error occurs from the HTTP request.
     """
 
+    url = 'http://{0}{1}'.format(host, path)
     consumer = oauth2.Consumer(CONSUMER_KEY, CONSUMER_SECRET)
     oauth_request = oauth2.Request('GET', url, url_params)
     oauth_request.update(
