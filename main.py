@@ -32,6 +32,18 @@ CONSUMER_SECRET = ''
 TOKEN = ''
 TOKEN_SECRET = ''
 
+# Yo API Token: http://dev.justyo.co
+YO_API_TOKEN = ''
+
+
+if len(CONSUMER_KEY) == 0 or \
+    len(CONSUMER_SECRET) == 0 or \
+    len(TOKEN) == 0 or \
+    len(TOKEN_SECRET) == 0 or \
+    len(YO_API_TOKEN) == 0:
+    print 'fill the tokens in lines 30-36'
+    sys.exit(1)
+
 
 def do_request(host, path, url_params=None):
     """Prepares OAuth authentication and sends the request to the API.
@@ -47,13 +59,9 @@ def do_request(host, path, url_params=None):
     Raises:
         urllib2.HTTPError: An error occurs from the HTTP request.
     """
-    url_params = url_params or {}
-    encoded_params = urllib.urlencode(url_params)
-
-    url = 'http://{0}{1}?{2}'.format(host, path, encoded_params)
 
     consumer = oauth2.Consumer(CONSUMER_KEY, CONSUMER_SECRET)
-    oauth_request = oauth2.Request('GET', url, {})
+    oauth_request = oauth2.Request('GET', url, url_params)
     oauth_request.update(
         {
             'oauth_nonce': oauth2.generate_nonce(),
@@ -66,7 +74,7 @@ def do_request(host, path, url_params=None):
     oauth_request.sign_request(oauth2.SignatureMethod_HMAC_SHA1(), consumer, token)
     signed_url = oauth_request.to_url()
 
-    print 'Querying {0} ...'.format(signed_url)
+    print 'Querying {0}'.format(signed_url)
 
     conn = urllib2.urlopen(signed_url, None)
     try:
@@ -88,7 +96,7 @@ def search(term, city, latitude, longitude):
         'sort': 2, # highest rated
         'radius_filter': 1600 # one mile
     }
-
+    print url_params
     return do_request(API_HOST, SEARCH_PATH, url_params=url_params)
 
 
@@ -109,13 +117,14 @@ def yo():
     response = requests.get('http://nominatim.openstreetmap.org/reverse?format=json&lat=' + latitude + '&lon=' +longitude + '&zoom=18&addressdetails=1')
     response_object = json.loads(response.text)
     city = response_object['address']['city']
+    print city
 
     # search using Yelp api
     response = search('bars', city, latitude, longitude)
     bar_url = response['businesses'][0]['mobile_url']
 
     # Yo the result back to the user
-    requests.post("http://api.justyo.co/yo/", data={'api_token': '<your_token>', 'username': username, 'link': bar_url})
+    requests.post("http://api.justyo.co/yo/", data={'api_token': YO_API_TOKEN, 'username': username, 'link': bar_url})
 
     # OK!
     return 'OK'
