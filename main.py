@@ -19,6 +19,7 @@ import urllib2
 import requests
 import oauth2
 from flask import request
+from flask import Flask
 
 API_HOST = 'api.yelp.com'
 SEARCH_LIMIT = 1
@@ -75,7 +76,7 @@ def do_request(host, path, url_params=None):
     oauth_request.sign_request(oauth2.SignatureMethod_HMAC_SHA1(), consumer, token)
     signed_url = oauth_request.to_url()
 
-    print 'Querying {0}'.format(signed_url)
+    print 'Querying Yelp {0}'.format(signed_url)
 
     conn = urllib2.urlopen(signed_url, None)
     try:
@@ -97,12 +98,12 @@ def search(term, city, latitude, longitude):
         'sort': 2, # highest rated
         'radius_filter': 1600 # one mile
     }
-    print url_params
+
     return do_request(API_HOST, SEARCH_PATH, url_params=url_params)
 
 
-from flask import Flask
 app = Flask(__name__)
+
 
 @app.route("/yo/")
 def yo():
@@ -114,21 +115,31 @@ def yo():
     latitude = splitted[0]
     longitude = splitted[1]
 
+    print "We got a Yo from " + username
+
     # get the city name since Yelp api must be provided with at least a city even though we give it accurate coordinates
     response = requests.get('http://nominatim.openstreetmap.org/reverse?format=json&lat=' + latitude + '&lon=' +longitude + '&zoom=18&addressdetails=1')
     response_object = json.loads(response.text)
     city = response_object['address']['city']
-    print city
 
-    # search using Yelp api
+    print username + " is at " + city
+
+    # search for bars using Yelp api
     response = search('bars', city, latitude, longitude)
-    bar_url = response['businesses'][0]['mobile_url']
+
+    # grab the first result (we limit the results to 1 anyway in the request)
+    bar = response['businesses'][0]
+
+    bar_url = bar['mobile_url']
+
+    print "Recommended bar is " + bar['name']
 
     # Yo the result back to the user
     requests.post("http://api.justyo.co/yo/", data={'api_token': YO_API_TOKEN, 'username': username, 'link': bar_url})
 
     # OK!
     return 'OK'
+
 
 if __name__ == "__main__":
     app.debug = True
