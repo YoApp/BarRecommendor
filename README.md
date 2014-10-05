@@ -39,7 +39,7 @@
 
 * Copy the URL ngrok creates (i.e ```http://1fe8e9f.ngrok.com```)
 
-* Create your Yo API account and use the ngrok URL as the callback URL but with the path "yo":
+* Create your Yo API account and use the ngrok URL as the callback URL but with the path "yo" (like it's defined for flask):
 
 ![alt tag](http://cl.ly/image/2D3E2r3S110F/Screen%20Shot%202014-10-05%20at%208.25.33%20AM.png)
 
