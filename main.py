@@ -10,12 +10,10 @@ Yelp Docs: http://www.yelp.com/developers/documentation
 Yelp Keys: http://www.yelp.com/developers/manage_api_keys
 
 """
-import json
 import sys
 import requests
 import oauth2
-from flask import request
-from flask import Flask
+from flask import request, Flask
 
 API_HOST = 'api.yelp.com'
 SEARCH_LIMIT = 1
@@ -62,7 +60,7 @@ def do_request(host, path, url_params=None):
     print 'Querying Yelp {0}'.format(signed_url)
 
     response = requests.get(signed_url)
-    response_object = json.loads(response.text)
+    response_object = response.json()
     return response_object
 
 def search(term, city, latitude, longitude):
@@ -96,7 +94,7 @@ def yo():
 
     # get the city name since Yelp api must be provided with at least a city even though we give it accurate coordinates
     response = requests.get('http://nominatim.openstreetmap.org/reverse?format=json&lat=' + latitude + '&lon=' +longitude + '&zoom=18&addressdetails=1')
-    response_object = json.loads(response.text)
+    response_object = response.json()
     city = response_object['address']['city']
 
     print username + " is at " + city
